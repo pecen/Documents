@@ -1,0 +1,8 @@
+
+Open a terminal window in VS Code and type the following: 
+
+For development:
+$Env:ASPNETCORE_ENVIRONMENT = "Development"
+
+For procuction:
+$Env:ASPNETCORE_ENVIRONMENT = "Production"

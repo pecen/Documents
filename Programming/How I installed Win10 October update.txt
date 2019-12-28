@@ -1,0 +1,12 @@
+
+1. Pressed Windows + typed Settings
+2. Clicked on Updates & Security
+3. Clicked on For Developers
+4. Changed Developer mode to Store apps
+5. Opened Optional Features (Windows and then type it in)
+6. Uninstalled the Windows Developer Mode Package
+
+
+See this link: 
+
+https://answers.microsoft.com/en-us/windows/forum/windows_10-update/windows-10-1809-update-undoing-changes/def7560f-2a8d-4a70-8ed4-d0a2dd0f613d

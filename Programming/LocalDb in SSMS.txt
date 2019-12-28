@@ -1,0 +1,8 @@
+To find all LocalDb instance names, open a terminal window and type:
+
+SqlLocalDB.exe i
+
+
+To connect to the LocalDb server in SSMS, type the following for the server name:
+
+(LocalDB)\MSSQLLocalDB

@@ -1,0 +1,101 @@
+
+The excerpt below comes from the following link: https://github.com/MarimerLLC/cslaforum/issues/324
+
+From the one asking the question, the code he supplied is:
+
+[Serializable]
+public class ProjectEdit : BusinessBase<ProjectEdit>
+{
+    //Properties here
+    ...
+
+    //Child list property
+    public static readonly PropertyInfo<ProjectVendors> VendorsProperty = RegisterProperty<ProjectVendors>(p => p.Vendors);
+    [Display(Name = "Vendors")]
+    public ProjectVendors Vendors
+    {
+        get { return LazyGetProperty(VendorsProperty, DataPortal.CreateChild<ProjectVendors>); }
+        private set { LoadProperty(VendorsProperty, value); }
+    }
+}
+
+
+The first answer from JonnyBee is:
+
+The first issue is to use LazyLoading properly. LazyLoading a child list property should be seen as
+
+1. The child list has its own DataPortal.Fetch method (as it can load itself)
+2. Ideally the lazy load should be done asyncronously (if your UI is a rich client)
+3. The child object will be "MarkAsChild" when added to the parent object and implements ChildInsert/Update/Delete to be saved as part of the parents DataPortal_Insert/Update/Delete.
+
+IE: a lazy loaded child is a child object that implements a "root" object fetch method. The data loading must be performed as a "root" object and save as part of the parent objects Save.
+
+I would also add code in DataPortal.Create of the parent to add an empty child list. This does not take much time or size on the wire, This way you will only do another call on the wire for existing objects that may have data in the database/storage.
+
+[Display(Name = "Vendors")]
+public ProjectVendors Vendors
+{
+    get { return LazyGetProperty(VendorsProperty, DataPortal.Fetch<ProjectVendors>); }
+    private set { LoadProperty(VendorsProperty, value); }
+}
+
+
+The 2nd answer from JonnyBee is:
+
+You will normally pass parameters in DataPortal.Fetch when you call LazyGet, f.ex:
+
+[Display(Name = "Vendors")]
+ public ProjectVendors Vendors
+{
+    get { return LazyGetProperty(VendorsProperty, 
+        DataPortal.Fetch<ProjectVendors>(ReadProperty(ProjectIdProperty)); }
+    private set { LoadProperty(VendorsProperty, value); }
+}
+
+
+The 3rd answer from JonnyBee is:
+
+Please read my first post again.
+
+let me explain this line of code:
+
+get { return LazyGetProperty(VendorsProperty, DataPortal.CreateChild<ProjectVendors>); }
+
+LazyGetProperty - if the property value is not loaded/initialized it will call the parameter method to initialize the property. (f.ex when called as vendor.VendorName).
+
+And DataPortal.CreateChild will create an empty child list!!!!!!
+
+ProjectVendors must implement a DataPortal_Fetch method to load values as if it was a standalone root objecty and YOUR code must make the call with the ProjectID parameter.
+
+So the property should be called like
+
+get { return LazyGetProperty(VendorsProperty, () => 
+    DataPortal.Fetch<ProjectVendors>(ReadProperty(ProjectIdProperty) ; }
+
+In your last post you have code that does an eager load and there is no need for LazyLoading. IE - initialize to a new empty list in Dataportal_Create and load the values from DB in DataPortal_Fetch from the Project class.
+
+
+Another answer, from tfreitasleal, is:
+
+Hi @jonnybee.
+Please confirm this is the correct way of using lazy properties.
+
+public static readonly PropertyInfo<VendorCollection> VendorsProperty = RegisterProperty<VendorCollection>(p => p.Vendors, "Vendors", RelationshipTypes.Child | RelationshipTypes.LazyLoad);
+
+public VendorCollection Vendors
+{
+    get
+    {
+#if ASYNC
+        return LazyGetPropertyAsync(VendorsProperty,
+            DataPortal.FetchAsync<VendorCollection>(ReadProperty(ProjectIdProperty)));
+#else
+        return LazyGetProperty(VendorsProperty,
+            () => DataPortal.Fetch<VendorCollection>(ReadProperty(ProjectIdProperty)));
+#endif
+    }
+    private set { LoadProperty(VendorsProperty, value); }
+}
+
+
+

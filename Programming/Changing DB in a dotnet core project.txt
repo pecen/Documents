@@ -1,0 +1,44 @@
+
+Make sure that you first have installed the new db provider, for instance through nuget.
+
+If no DAL is used, and the db connection is done directly in the .Net Core WebAPI project, follow the a) instructions, otherwise the b) instructions
+
+1a. Open Startup.cs
+2a. In the ConfigureServices method, where you have the following row:
+
+            services.AddDbContext<DataContext>(x => 
+                x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                    .ConfigureWarnings(w => w.Ignore(CoreEventId.IncludeIgnoredWarning)));
+
+...change x.UseSqlServer to the db-provider you will use, e.g. x.UseSqlite. 
+
+1b. Open the Context file (for instance StoreContext.cs)
+2b. In the OnConfiguring method, where you have the following row:
+
+        optionsBuilder.UseSqlServer(
+          _connectionStringSQLServer, options => options.ExecutionStrategy(c => new MyConnectionStrategy(c)));
+
+...change optionsBuilder.UseSqlServer to the db-provider you will use, e.g. optionsBuilder.UseSqlite, and change the connection string reference, e.g. _connectionStringSQLite
+
+3. Change the connection string, for instance like
+
+    private readonly string _connectionStringSQLite = "Data Source = Database.db";
+
+...if SQLite is the db provider
+
+4. It's possible to now delete your current migrations (or back them up first) if you know they are not needed anymore
+5. In a terminal window, or Package Manager Console, go to the directory where you have your .net Core Api project
+6. Create new migrations for the new db-provider, by for instance typing:
+
+
+dotnet ef migrations add MyInitialSQLite -o EF/Migrations/SQLite -c SpyStore.DAL.EF.StoreContext
+
+...where MyInitialSQLite is the name of the migration you choose, and -o stands for the output directory for the migrations, and -c stands for the fully qualified name of the Context file. Both the -o and -c can be left out, and if they are the migrations will be created in the root folder under the directory Migrations, and the default context (or the only context EF can find in the current project directory) will be used. It’s generally a good idea though to specify the context as well, because real business applications frequently have more than one, and getting in the habit of specifying the context will potentially be required in those larger projects.
+
+
+Lesson learned:
+When I changed to SQLite, and then ran 
+
+dotnet ef migrations add MyInitialSQLite -o EF/Migrations/SQLite -c SpyStore.DAL.EF.StoreContext
+
+...the reference to the SQLite dlls were strangely removed, and I got an error saying that there is no reference to UseSQLite. After restoring nuget packages for the solution, build the project separately, and then doing the migration part again it worked. 

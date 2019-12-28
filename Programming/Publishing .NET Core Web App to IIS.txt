@@ -1,0 +1,28 @@
+
+1. Create the folder where you will store the .Net Core web app files (like C:\DAPublish)
+2. Open IIS Manager
+3. Under Sites, create a new site with the name of the webapp, like datingapp or something. 
+4. Choose the physical path you created earlier
+5. Under Host name, type datingapp.com
+6. Open the host file and add 127.0.0.1  datingapp.com
+7. In IIS Manager, go to the Application Pools, and double-click on datingapp
+8. Set the .NET CLR version to No Managed Code
+9. In a browser, go to google and search for .net core publish iis
+10. Click on the link "Host ASP.NET Core to IIS & How ASP.NET Core...", the link should be something like: https://docs.microsoft.com/en-us/aspnet/core/host-and-deploy/?view=aspnetcore-2.1&tabs=aspnetcore2x
+11. Go to the section "Install the .NET Core Hosting Bundle"
+12. Click on the link ".NET downloadspage"
+13. Click on "Download .NET Core Runtime
+14. Open VS Code on your local machine at the location where your web app is
+15. Go to a terminal window in VS Code, and type dotnet publish -o <the path to where you want to publish>, e.g. dotnet publish  -o ..\..\DAPublish, or if it's a network path, dotnet publish -o \\IONION\DAPublish. But then you first have to share the DAPublish folder on the server. 
+16. Open the web.config file in the publishing folder
+17. Open windows explorer and set user rights for the web app folder to IIS_IUSRS
+
+SQL Server
+
+18. Make a backup of the db in use in your development project
+19. Copy the backup to the server
+20. Open SSMS on the server and restore the database
+21. Create a new user with sysadmin priveliges (under the root/Security in SSMS)
+22. Open the appconfig.json in the published folder, e.g. the DAPublish folder
+23. Configure the connection string to suite what you have in your environment
+

@@ -1,0 +1,2 @@
+Task.Run(async () => { response = await client.PostAsync(request.ServerUri, body); }).Wait(); 
+

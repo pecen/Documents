@@ -1,0 +1,53 @@
+
+		private void GetSession(SessionRequest sessionReq) {
+			string jsonReq = JsonConvert.SerializeObject(sessionReq, Formatting.None);
+
+			var request = CreateHttpWebRequest(jsonReq, APICalls[ApiRequests.CreateSession.ToString()]);
+
+			// RESPONSE
+			HttpWebResponse response = null;
+			string jsonResponse = "";
+
+			try {
+				response = (HttpWebResponse)request.GetResponse();
+				using (Stream s = response.GetResponseStream()) {
+					using (StreamReader sr = new StreamReader(s)) {
+						jsonResponse = sr.ReadToEnd();
+
+						//Save accessKey & sessionId for later use 
+						_sessionResponse = JsonConvert.DeserializeObject<SessionResponse>(jsonResponse);
+					}
+				}
+			} catch (WebException e) {
+				GetProtocolError(e);
+			}
+		}
+
+
+
+
+
+		private string GetProtocolError(WebException e) {
+			if (e.Status == WebExceptionStatus.ProtocolError) {
+				StringBuilder sb = new StringBuilder();
+
+				sb.AppendLine("ERROR");
+				sb.AppendLine($"Status Code : {((HttpWebResponse)e.Response).StatusCode}");
+				sb.AppendLine($"Status Description : {((HttpWebResponse)e.Response).StatusDescription}");
+				using (Stream data = e.Response.GetResponseStream()) {
+					using (var reader = new StreamReader(data)) {
+						string text = reader.ReadToEnd();
+						sb.AppendLine(text);
+					}
+				}
+
+
+
+
+---
+
+			get { if (string.IsNullOrEmpty(this.CashBookNr)) { return HotelCashBookings.Off; } else { return HotelCashBookings.Direct; } }
+
+Ändra i ext.method IsValidJson, logga sista catchen
+
+Ändra Logger.Error till Logger.Info på vissa ställen

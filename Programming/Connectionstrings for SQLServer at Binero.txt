@@ -1,0 +1,3 @@
+<add name="LomahoviDb" connectionString="Data Source=lomahovi-142834.mssql.binero.se;Initial Catalog=142834-lomahovi;Persist Security Info=True;User ID=142834_ot82679;Password=Gh0stf@c" />
+
+<!--<add name="LomahoviDb" connectionString="Data Source=(localdb)\v11.0;Integrated Security=True;Initial Catalog=Lomahovi" providerName="System.Data.SqlClient" />-->
