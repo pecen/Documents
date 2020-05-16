@@ -1,0 +1,7 @@
+
+Install through NuGet PackageManager:
+Install-Package DataConnectionDialog -Version 1.2.0
+
+The project is on GitHub on:
+https://github.com/vilogp/POCOGenerator/tree/master/packages/DataConnectionDialog.1.2
+
