@@ -1,0 +1,4 @@
+
+Innehåller bla en "OpenPath file dialog" as opposed to "OpenFile file dialog" att använda i Wpf-applikation. Installera från NuGet:
+
+Install-Package winapicp -Version 1.1.0
